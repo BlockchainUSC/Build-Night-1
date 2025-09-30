@@ -272,7 +272,7 @@ You should see an output like `Deploying Counter contract to Sepolia... Counter 
     }, add the following code to store our contract info:
     `const contractAddress = "0x... <your contract address from earlier"";` and `let signer;` directly below it.
 - Add your address from earlier into the contract address variable.
-- Then, add the following code block `  const [contract, setContract] = useState();` to keep track of our contract object.
+- Then, add the following code block `const [contract, setContract] = useState();` to keep track of our contract object.
 - Update the onClickConnect function so that it looks like this:
 
 ```solidity
