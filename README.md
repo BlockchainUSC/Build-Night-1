@@ -111,7 +111,7 @@
 ### Setting up Hardhat
 - What is Hardhat? 
     JavaScript-based framework to compile, test, deploy smart contracts. 
-- Run the command: `npx hardhat init`
+- Run the command: `npx hardhat --init`
 - Choose Hardhat 3 Beta
 - project root is the current directory (hit enter)
 - Select Typescript Project using Mocha and Ethers.js
@@ -119,7 +119,7 @@
 
 
 ### Smart Contract
-- Inside of blockchain/contracts, delete Lock.sol and create a file called **firstDapp.sol** and copy the following code into the file: 
+- Inside of blockchain/contracts, delete Counter.sol (we'll write our own counter) and create a file called **firstDapp.sol** and copy the following code into the file: 
     ```solidity
     //SPDX-License-Identifier: MIT
     pragma solidity^0.8.17;
@@ -173,6 +173,7 @@
 - Navigate to Neworks page, change the drop down to Sepolia and copy the URL
 
 - Add the URL to your .env file in this format: `RPC_URL=URL` (no quotes)
+      - RPC stands for Remote Procedure Call. It allows our app to get information from and send information to the blockchain (in this case Sepolia). We will use it to deploy our contract to the Sepolia blockchain so everyone who accesses the blockchain can see our contract deployed.
 
 - Update your hardhat.config.ts file to reference these values like this:  (make sure to import dotenv/config)
 
@@ -268,9 +269,10 @@ You should see an output like `Deploying Counter contract to Sepolia... Counter 
 
 ## Create a contract object in App.js
 - At the very top of function App() {
-    }, add the follwing code to store our contract info:
-    `const contractAddress = "0xFC045EA72FEb94531f98f3B3bB7EE09F0650c934";` and `let signer;` directly below it
+    }, add the following code to store our contract info:
+    `const contractAddress = "0x... <your contract address from earlier"";` and `let signer;` directly below it.
 - Add your address from earlier into the contract address variable.
+- Then, add the following code block `  const [contract, setContract] = useState();` to keep track of our contract object.
 - Update the onClickConnect function so that it looks like this:
 
 ```solidity
@@ -293,6 +295,15 @@ const onClickConnect = async () => {
       );
   };
 ```
+
+A provider is your application's way of reading from the Ethereum blockchain. window.ethereum is a JavaScript object injected by your wallet (Metamask, Coinbase, etc. on installation. Web3Provider converts methods from window.ethereum into methods that ethers.js can work with. 
+
+Then, it requests access to all of the user's accounts in their wallet and chooses the first connected account to use in this app. The Metamask popup appears for the user to connect or cancel.
+
+The signer object allows the app to sign transactions from the account using the app.
+
+Lastly, the new ethers Contract creates an object that allows you to interact with your contract by taking in a few key parameters: the contract's address, the contract's ABI (Application Binary Interface) --> a JSON file with all of the functions, events, variables, and the signer (who will be interacting with the contract). 
+
 Note how the last two lines store the signer, an object that can sign transactions on behalf of the connected wallet account and create a contract object using your contract's address, its ABI, and your signer information.
 
 ## Store number returned by Contract
@@ -312,7 +323,7 @@ const getCount = async () => {
 
 ```javascript
 useEffect(() => {
-    if (contract == undefined) return;
+    if (contract === undefined) return;
     console.log("Getting initial count from contract");
     getCount();
     console.log("Initial count received");
@@ -326,7 +337,7 @@ Add the following additional functions to your App.js to force the increase and 
 
 ```javascript
 async function increase() {
-    if (contract == undefined) {
+    if (contract === undefined) {
         return;
     }
 
@@ -341,7 +352,7 @@ async function increase() {
 
 ```javascript
 async function decrease() {
-    if (contract == undefined) {
+    if (contract === undefined) {
         return;
     }
     console.log("decreasing count");
